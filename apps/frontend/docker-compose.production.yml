@@ -1,0 +1,14 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: nebalus-web-frontend-nginx
+    ports:
+      - "80:80"
+    networks:
+      - nebalus-web-frontend-network
+
+networks:
+  nebalus-web-frontend-network:
+    driver: bridge
