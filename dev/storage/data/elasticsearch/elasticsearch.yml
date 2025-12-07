@@ -1,0 +1,10 @@
+cluster.name: "nebalus-storage-cluster"
+node.name: "nebalus-storage-node-1"
+
+discovery.type: single-node
+
+xpack.security.enabled: true
+xpack.license.self_generated.type: basic
+
+http.host: 0.0.0.0
+transport.host: 0.0.0.0

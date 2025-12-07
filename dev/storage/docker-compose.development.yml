@@ -1,0 +1,76 @@
+name: "web-storage-development"
+services:
+
+  # INTERN PORT: 3306
+  mysql:
+    build:
+      context: .
+      dockerfile: docker/mysql/Dockerfile
+      target: base
+    container_name: nebalus-web-storage-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "main"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "123456"
+    volumes:
+      - /var/lib/mysql
+    networks:
+      - storage-net
+
+#  elasticsearch:
+#    build:
+#      context: .
+#      dockerfile: docker/elasticsearch/Dockerfile
+#      target: base
+#    container_name: nebalus-web-storage-elasticsearch
+#    environment:
+#      - ELASTIC_PASSWORD=123456
+#      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+#    ports:
+#      - '9200:9200'
+#    networks:
+#      - storage-net
+#    healthcheck:
+#      test:
+#        [
+#          "CMD-SHELL",
+#          "curl http://localhost:9200 | grep -q 'missing authentication credentials'"
+#        ]
+#      interval: 10s
+#      timeout: 10s
+#      retries: 60
+#
+#  kibana:
+#    build:
+#      context: .
+#      dockerfile: docker/kibana/Dockerfile
+#      target: base
+#    container_name: nebalus-web-storage-kibana
+#    depends_on:
+#      elasticsearch:
+#        condition: service_healthy
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - '5601:5601'
+#    networks:
+#      - storage-net
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: nebalus-web-storage-pma
+    ports:
+      - '8080:80'
+    environment:
+      - PMA_HOST=mysql
+    depends_on:
+      - mysql
+    networks:
+      - storage-net
+
+networks:
+  storage-net:
+    name: nebalus-web-storage-development-net
