@@ -1,0 +1,42 @@
+<?php
+
+namespace Nebalus\Webapi\Api\Admin\User\Role\GetAll;
+
+use Fig\Http\Message\RequestMethodInterface;
+use Fig\Http\Message\StatusCodeInterface;
+use Nebalus\Webapi\Api\Admin\User\Role\GetAll\GetAllRoleFromUserValidator;
+use Nebalus\Webapi\Api\Admin\User\Role\GetAll\GetAllRoleFromUserResponder;
+use Nebalus\Webapi\Config\Types\PermissionNodeTypes;
+use Nebalus\Webapi\Exception\ApiDateMalformedStringException;
+use Nebalus\Webapi\Exception\ApiException;
+use Nebalus\Webapi\Exception\ApiInvalidArgumentException;
+use Nebalus\Webapi\Repository\RoleRepository\MySqlRoleRepository;
+use Nebalus\Webapi\Slim\ResultInterface;
+use Nebalus\Webapi\Value\Result\Result;
+use Nebalus\Webapi\Value\Result\ResultBuilder;
+use Nebalus\Webapi\Value\User\AccessControl\Permission\PermissionAccess;
+use Nebalus\Webapi\Value\User\AccessControl\Permission\UserPermissionIndex;
+
+readonly class GetAllRoleFromUserService
+{
+    public function __construct(
+        private MySqlRoleRepository $roleRepository,
+        private GetAllRoleFromUserResponder $responder
+    ) {
+    }
+
+    /**
+     * @throws ApiInvalidArgumentException
+     * @throws ApiException
+     * @throws ApiDateMalformedStringException
+     */
+    public function execute(GetAllRoleFromUserValidator $validator, UserPermissionIndex $userPerms): ResultInterface
+    {
+        if (!$userPerms->hasAccessTo(PermissionAccess::from(PermissionNodeTypes::ADMIN_ROLE_EDIT, true))) {
+            return ResultBuilder::buildNoPermissionResult();
+        }
+
+        $permissions = $this->roleRepository->getAllPermissionLinksByRoleId($validator->getRoleId());
+        return $this->responder->render($permissions);
+    }
+}

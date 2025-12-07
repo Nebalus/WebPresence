@@ -1,0 +1,15 @@
+meta {
+  name: Delete Other Referrals
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{protocol}}://{{host}}/ui/user/2/services/referrals/nSW1Oep4
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{auth_jwt}}
+}

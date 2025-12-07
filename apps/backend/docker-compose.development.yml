@@ -1,0 +1,66 @@
+name: "web-backend-development"
+services:
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: development
+    container_name: nebalus-web-api-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./public:/var/www/public:ro
+    depends_on:
+      - php-fpm
+    networks:
+      - backend-net
+
+  # INTERN PORT: 9000
+  php-fpm:
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+      target: development
+    container_name: nebalus-web-api
+    user: '1001:1001' # Default User ID
+    volumes:
+      - ./:/var/www:rw
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      APP_ENV: "development"
+      ERROR_LOGLEVEL: "Warning"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_NORMAL_EXPIRATION_TIME: 86400
+      JWT_EXTENDED_EXPIRATION_TIME: 604800
+      ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+      MYSQL_HOST: "nebalus-web-storage-mysql"
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: "main"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "123456"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    networks:
+      - backend-net
+      - storage-net
+
+  redis:
+    build:
+      context: .
+      dockerfile: docker/redis/Dockerfile
+      target: base
+    container_name: nebalus-web-api-redis
+    command: [ "redis-server", "--appendonly", "no", "--maxmemory", "500mb", "--maxmemory-policy", "volatile-lru" ]
+    networks:
+      - storage-net
+
+networks:
+  backend-net:
+    name: nebalus-web-backend-development-net
+  storage-net:
+    name: nebalus-web-storage-development-net
+    external: true

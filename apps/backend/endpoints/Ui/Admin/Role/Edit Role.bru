@@ -1,0 +1,30 @@
+meta {
+  name: Edit Role
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{protocol}}://{{host}}/ui/admin/role/:roleId
+  body: json
+  auth: bearer
+}
+
+params:path {
+  roleId: 2
+}
+
+auth:bearer {
+  token: {{auth_jwt}}
+}
+
+body:json {
+  {
+    "name": "TEST",
+    "description": "null",
+    "color": "ffffff",
+    "access_level": 24123,
+    "applies_to_everyone": true,
+    "disabled": false
+  }
+}

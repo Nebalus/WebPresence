@@ -1,0 +1,12 @@
+.idea/
+logs/
+coverage/
+.git/
+.gitignore
+.phpunit.result.cache
+docker-compose.development.yml
+justfile
+CHANGELOG.md
+README.md
+TODO.md
+
